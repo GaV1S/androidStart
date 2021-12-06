@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="lineTitleTextSize">32</integer>
+    <integer name="lineTimeTextSize">16</integer>
+    <integer name="contentTextSize">24</integer>
+    <integer name="mainLayoutPadding">10</integer>
+    <integer name="noteLineMargin">10</integer>
+    <integer name="noteLinePadding">10</integer>
+    <integer name="noteContentPadding">30</integer>
+</resources>
