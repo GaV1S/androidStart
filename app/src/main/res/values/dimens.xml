@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="nullWidth">0px</dimen>
-    <dimen name="datePickerButtonTextSize">16sp</dimen>
+    <dimen name="datePickerButtonTextSize">14sp</dimen>
     <dimen name="datePickerPadding">10dp</dimen>
+    <dimen name="navHeaderHeight">250dp</dimen>
+    <dimen name="navHeaderDimen">42sp</dimen>
+    <dimen name="userIconSize">92dp</dimen>
+    <dimen name="userIconBorderSize">2dp</dimen>
+    <dimen name="navHeaderPaddingStartEnd">30dp</dimen>
+    <dimen name="navHeaderPaddingTopBottom">10dp</dimen>
+    <dimen name="navHeaderUserInfoTextSize">20sp</dimen>
 </resources>

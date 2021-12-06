@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/actionSettings"
+        android:orderInCategory="100"
+        android:title="@string/menuSettings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/actionSort"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:orderInCategory="60"
+        android:title="@string/menuSort"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/actionFavorite"
+        android:icon="@android:drawable/btn_star_big_on"
+        android:orderInCategory="20"
+        android:title="@string/menuFavorite"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/actionAdd"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="10"
+        android:title="@string/menuAdd"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/actionSearch"
+        android:icon="@android:drawable/ic_menu_search"
+        android:orderInCategory="5"
+        android:title="@string/menuSearch"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always" />
+</menu>
