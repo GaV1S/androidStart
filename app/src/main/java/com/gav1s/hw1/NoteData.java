@@ -5,7 +5,7 @@ import android.annotation.SuppressLint;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Note {
+public class NoteData {
     private final int id;
     private String title;
     private String content;
@@ -14,7 +14,7 @@ public class Note {
 
     private static int freeId;
 
-    public Note(String title, String content, Date createTime, int importance) {
+    public NoteData(String title, String content, Date createTime, int importance) {
         this.id = freeId++;
         this.title = title;
         this.content = content;
@@ -30,7 +30,7 @@ public class Note {
         return title;
     }
 
-    public Note setTitle(String title) {
+    public NoteData setTitle(String title) {
         this.title = title;
         return this;
     }
@@ -39,7 +39,7 @@ public class Note {
         return content;
     }
 
-    public Note setContent(String content) {
+    public NoteData setContent(String content) {
         this.content = content;
         return this;
     }
@@ -53,7 +53,7 @@ public class Note {
         return dateFormat.format(createTime);
     }
 
-    public Note setCreateTime(Date createTime) {
+    public NoteData setCreateTime(Date createTime) {
         this.createTime = createTime;
         return this;
     }
@@ -62,7 +62,7 @@ public class Note {
         return importance;
     }
 
-    public Note setImportance(int importance) {
+    public NoteData setImportance(int importance) {
         this.importance = importance;
         return this;
     }

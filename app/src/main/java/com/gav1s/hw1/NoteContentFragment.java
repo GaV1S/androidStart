@@ -63,7 +63,6 @@ public class NoteContentFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-
     @SuppressLint("SetTextI18n")
     private void initView(View view) {
         LinearLayout noteContentLayout = (LinearLayout) view;
@@ -75,7 +74,7 @@ public class NoteContentFragment extends Fragment {
                 noteContentPadding,
                 noteContentPadding
         );
-        titleTextView.setText(AppData.notes.get(index).getTitle());
+        titleTextView.setText(MainActivity.noteSource.getNoteData(index).getTitle());
         titleTextView.setTextSize(getResources().getInteger(R.integer.lineTitleTextSize));
         noteContentLayout.addView(titleTextView);
         TextView contentTextView = new TextView(getContext());
@@ -85,7 +84,7 @@ public class NoteContentFragment extends Fragment {
                 noteContentPadding,
                 noteContentPadding
         );
-        contentTextView.setText(AppData.notes.get(index).getContent());
+        contentTextView.setText(MainActivity.noteSource.getNoteData(index).getContent());
         contentTextView.setTextSize(getResources().getInteger(R.integer.contentTextSize));
         noteContentLayout.addView(contentTextView);
         TextView createTimeTextView = new TextView(getContext());
@@ -95,7 +94,7 @@ public class NoteContentFragment extends Fragment {
                 noteContentPadding,
                 noteContentPadding
         );
-        createTimeTextView.setText("Created in " + AppData.notes.get(index).getStringCreateTime());
+        createTimeTextView.setText("Created in " + MainActivity.noteSource.getNoteData(index).getStringCreateTime());
         createTimeTextView.setTextSize(getResources().getInteger(R.integer.lineTimeTextSize));
         noteContentLayout.addView(createTimeTextView);
         Button buttonDateEdit = new Button(getContext());

@@ -10,4 +10,11 @@
     <dimen name="navHeaderPaddingStartEnd">30dp</dimen>
     <dimen name="navHeaderPaddingTopBottom">10dp</dimen>
     <dimen name="navHeaderUserInfoTextSize">20sp</dimen>
+    <dimen name="cardCornerRadius">5dp</dimen>
+    <dimen name="cardElevation">5dp</dimen>
+    <dimen name="listImageWidth">50dp</dimen>
+    <dimen name="listImageHeight">50dp</dimen>
+    <dimen name="listMargin">5dp</dimen>
+    <dimen name="titleTextSize">28sp</dimen>
+    <dimen name="listContentMargin">10dp</dimen>
 </resources>
