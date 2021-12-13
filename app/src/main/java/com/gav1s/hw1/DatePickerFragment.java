@@ -42,7 +42,7 @@ public class DatePickerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_date_picker, container, false);
         datePicker = view.findViewById(R.id.datePicker);
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(AppData.notes.get(index).getCreateTime());
+        calendar.setTime(MainActivity.noteSource.getNoteData(index).getCreateTime());
         datePicker.updateDate(calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH));
@@ -50,7 +50,7 @@ public class DatePickerFragment extends Fragment {
             calendar.set(datePicker.getYear(),
                     datePicker.getMonth(),
                     datePicker.getDayOfMonth());
-            AppData.notes.get(index).setCreateTime(calendar.getTime());
+            MainActivity.noteSource.getNoteData(index).setCreateTime(calendar.getTime());
             FragmentChangeListener fragmentChangeListener = (FragmentChangeListener) getActivity();
             if (fragmentChangeListener != null) {
                 fragmentChangeListener.closeFragmentAndBackTo(index);
