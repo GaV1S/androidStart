@@ -28,6 +28,7 @@ import com.gav1s.hw1.data.NoteSourceImpl;
 import com.gav1s.hw1.ui.NoteContentFragment;
 import com.gav1s.hw1.ui.Settings;
 import com.gav1s.hw1.ui.SettingsFragment;
+import com.gav1s.hw1.ui.NotesListFragment;
 
 public class MainActivity extends AppCompatActivity implements FragmentChangeListener {
 
@@ -58,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
         SharedPreferences sharedPref = getSharedPreferences(Settings.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
         Settings.isDarkTheme = sharedPref.getBoolean(Settings.DARK_THEME, false);
     }
-
     private void addFragments() {
         NotesListFragment notesListFragment = NotesListFragment.newInstance();
         getSupportFragmentManager()
@@ -73,12 +73,10 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
                     .commit();
         }
     }
-
     private void initView() {
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
     }
-
     private void initDrawer(Toolbar toolbar) {
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -87,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
                 R.string.navigationDrawerClose);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -98,13 +95,11 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
             return false;
         });
     }
-
     private Toolbar initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         return toolbar;
     }
-
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -112,10 +107,8 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
         if (navigateFragment(id)) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-
     @SuppressLint("NonConstantResourceId")
     private boolean navigateFragment(int id) {
         switch (id) {
@@ -128,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
         }
         return false;
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -140,17 +132,13 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
                 Toast.makeText(MainActivity.this, query, Toast.LENGTH_SHORT).show();
                 return true;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 return true;
             }
         });
-
         return true;
     }
-
-
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -167,13 +155,11 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
                     .commit();
         }
     }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_INDEX, index);
     }
-
     @Override
     public void replaceFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager()
@@ -186,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
         }
         fragmentTransaction.commit();
     }
-
     @Override
     public void closeFragmentAndBackTo(int indexPopFragment) {
         if (isLandscape) {
@@ -198,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
             getSupportFragmentManager().popBackStack();
         }
     }
-
     @Override
     public void changeIndex(int index) {
         this.index = index;
