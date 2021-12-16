@@ -6,4 +6,4 @@
     android:layout_height="match_parent"
     tools:listitem="@layout/item"
     tools:itemCount="10"
-    tools:context=".NotesListFragment" />
+    tools:context=".ui.NotesListFragment" />

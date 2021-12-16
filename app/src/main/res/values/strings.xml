@@ -15,4 +15,6 @@
     <string name="userName">Vladimir</string>
     <string name="userEmail">GaV1S@yandex.ru</string>
     <string name="about">About program</string>
+    <string name="preCreateTimeString">Created in</string>
+    <string name="menuDelete">Delete</string>
 </resources>

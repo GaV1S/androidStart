@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_margin="@dimen/listContentMargin"
-    tools:context=".ui.NoteContentFragment">
+    tools:context=".ui.NoteEditFragment">
 
-    <TextView
+    <EditText
         android:id="@+id/noteTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:textSize="@dimen/createTimeTextSize"
         android:text="@string/preCreateTimeString"/>
 
-    <TextView
+    <EditText
         android:id="@+id/noteContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package com.gav1s.hw1;
+package com.gav1s.hw1.data;
 
 import androidx.fragment.app.Fragment;
 

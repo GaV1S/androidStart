@@ -1,4 +1,4 @@
-package com.gav1s.hw1;
+package com.gav1s.hw1.data;
 
 import android.annotation.SuppressLint;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class NoteSourceImpl implements NoteSource {
 
-    private List<NoteData> notes = null;
+    private final List<NoteData> notes;
 
     public NoteSourceImpl() {
         notes = new ArrayList<>(7);
@@ -43,5 +43,15 @@ public class NoteSourceImpl implements NoteSource {
     @Override
     public int size() {
         return notes.size();
+    }
+
+    @Override
+    public void updateNoteData(int position, NoteData noteData) {
+        notes.set(position, noteData);
+    }
+
+    @Override
+    public void deleteNoteData(int position) {
+        notes.remove(position);
     }
 }

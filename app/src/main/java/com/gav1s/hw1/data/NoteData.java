@@ -1,11 +1,13 @@
-package com.gav1s.hw1;
+package com.gav1s.hw1.data;
 
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class NoteData {
+public class NoteData implements Parcelable {
     private final int id;
     private String title;
     private String content;
@@ -21,6 +23,25 @@ public class NoteData {
         this.createTime = createTime;
         this.importance = importance;
     }
+
+    protected NoteData(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        content = in.readString();
+        importance = in.readInt();
+    }
+
+    public static final Creator<NoteData> CREATOR = new Creator<NoteData>() {
+        @Override
+        public NoteData createFromParcel(Parcel in) {
+            return new NoteData(in);
+        }
+
+        @Override
+        public NoteData[] newArray(int size) {
+            return new NoteData[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -69,5 +90,18 @@ public class NoteData {
 
     public static int getFreeId() {
         return freeId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(content);
+        dest.writeInt(importance);
     }
 }

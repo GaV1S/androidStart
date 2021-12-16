@@ -13,4 +13,10 @@
         android:orderInCategory="25"
         android:title="@string/menuSend"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/actionDelete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="16"
+        android:title="@string/menuDelete"
+        app:showAsAction="never" />
 </menu>

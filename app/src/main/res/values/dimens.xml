@@ -17,4 +17,6 @@
     <dimen name="listMargin">5dp</dimen>
     <dimen name="titleTextSize">28sp</dimen>
     <dimen name="listContentMargin">10dp</dimen>
+    <dimen name="contentTextSize">24sp</dimen>
+    <dimen name="createTimeTextSize">12sp</dimen>
 </resources>
