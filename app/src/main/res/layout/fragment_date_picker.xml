@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/datePickerPadding"
     android:orientation="vertical"
-    tools:context=".DatePickerFragment">
+    tools:context=".ui.DatePickerFragment">
     <DatePicker
         android:id="@+id/datePicker"
         android:layout_width="match_parent"

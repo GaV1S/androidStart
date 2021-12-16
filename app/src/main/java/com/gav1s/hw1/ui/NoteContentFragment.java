@@ -1,4 +1,4 @@
-package com.gav1s.hw1;
+package com.gav1s.hw1.ui;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -15,6 +15,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.gav1s.hw1.MainActivity;
+import com.gav1s.hw1.R;
+import com.gav1s.hw1.data.FragmentChangeListener;
 
 public class NoteContentFragment extends Fragment {
 
@@ -51,13 +55,13 @@ public class NoteContentFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.note_content_fragment, menu);
+        inflater.inflate(R.menu.note_actions, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.actionEdit){
-            Toast.makeText(getContext(), "Chosen edit note", Toast.LENGTH_SHORT).show();
+            changeToFragment(NoteEditFragment.newInstance(index));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -65,47 +69,29 @@ public class NoteContentFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void initView(View view) {
+        String preCreateTimeString = getResources().getString(R.string.preCreateTimeString);
         LinearLayout noteContentLayout = (LinearLayout) view;
-        TextView titleTextView = new TextView(getContext());
-        int noteContentPadding = getResources().getInteger(R.integer.noteContentPadding);
-        titleTextView.setPadding(
-                noteContentPadding,
-                noteContentPadding,
-                noteContentPadding,
-                noteContentPadding
-        );
-        titleTextView.setText(MainActivity.noteSource.getNoteData(index).getTitle());
-        titleTextView.setTextSize(getResources().getInteger(R.integer.lineTitleTextSize));
-        noteContentLayout.addView(titleTextView);
-        TextView contentTextView = new TextView(getContext());
-        contentTextView.setPadding(
-                noteContentPadding,
-                noteContentPadding,
-                noteContentPadding,
-                noteContentPadding
-        );
-        contentTextView.setText(MainActivity.noteSource.getNoteData(index).getContent());
-        contentTextView.setTextSize(getResources().getInteger(R.integer.contentTextSize));
-        noteContentLayout.addView(contentTextView);
-        TextView createTimeTextView = new TextView(getContext());
-        createTimeTextView.setPadding(
-                noteContentPadding,
-                noteContentPadding,
-                noteContentPadding,
-                noteContentPadding
-        );
-        createTimeTextView.setText("Created in " + MainActivity.noteSource.getNoteData(index).getStringCreateTime());
-        createTimeTextView.setTextSize(getResources().getInteger(R.integer.lineTimeTextSize));
-        noteContentLayout.addView(createTimeTextView);
+        TextView title = view.findViewById(R.id.noteTitle);
+        title.setText(MainActivity.noteSource.getNoteData(index).getTitle());
+        TextView createTime = view.findViewById(R.id.noteCreateTime);
+        createTime.setText(preCreateTimeString + " "
+                + MainActivity.noteSource.getNoteData(index).getStringCreateTime());
+        TextView content = view.findViewById(R.id.noteContent);
+        content.setText(MainActivity.noteSource.getNoteData(index).getContent());
         Button buttonDateEdit = new Button(getContext());
-        buttonDateEdit.setText("Edit date");
+        buttonDateEdit.setText("Edit note");
         buttonDateEdit.setTextSize(getResources().getInteger(R.integer.lineTimeTextSize));
         buttonDateEdit.setOnClickListener(v -> {
-            FragmentChangeListener fragmentChangeListener = (FragmentChangeListener) getActivity();
-            assert fragmentChangeListener != null;
-            fragmentChangeListener.replaceFragment(DatePickerFragment.newInstance(index));
+            changeToFragment(NoteEditFragment.newInstance(index));
         });
         noteContentLayout.addView(buttonDateEdit);
 
+    }
+
+    void changeToFragment(Fragment fragment) {
+        FragmentChangeListener fragmentChangeListener = (FragmentChangeListener) getActivity();
+        if (fragmentChangeListener != null) {
+            fragmentChangeListener.replaceFragment(fragment);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.gav1s.hw1;
+package com.gav1s.hw1.ui;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.gav1s.hw1.R;
 
 public class SettingsFragment extends Fragment {
 

@@ -1,4 +1,4 @@
-package com.gav1s.hw1;
+package com.gav1s.hw1.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 
 import androidx.fragment.app.Fragment;
+
+import com.gav1s.hw1.data.FragmentChangeListener;
+import com.gav1s.hw1.MainActivity;
+import com.gav1s.hw1.R;
 
 import java.util.Calendar;
 
