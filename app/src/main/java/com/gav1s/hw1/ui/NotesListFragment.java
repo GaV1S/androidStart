@@ -24,7 +24,7 @@ import com.gav1s.hw1.data.NoteSource;
 
 public class NotesListFragment extends Fragment {
 
-    NotesListAdapter adapter;
+    private NotesListAdapter adapter;
     public NotesListFragment() {
     }
 
