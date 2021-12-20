@@ -1,17 +1,11 @@
 package com.gav1s.hw1;
 
-import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -20,171 +14,117 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
-import java.text.ParseException;
-
-import com.gav1s.hw1.data.FragmentChangeListener;
-import com.gav1s.hw1.data.NoteSource;
-import com.gav1s.hw1.data.NoteSourceImpl;
+import com.gav1s.hw1.data.NoteData;
+import com.gav1s.hw1.ui.AboutAppFragment;
 import com.gav1s.hw1.ui.NoteContentFragment;
-import com.gav1s.hw1.ui.Settings;
-import com.gav1s.hw1.ui.SettingsFragment;
+import com.gav1s.hw1.ui.navdrawer.SettingsFragment;
 import com.gav1s.hw1.ui.NotesListFragment;
 
-public class MainActivity extends AppCompatActivity implements FragmentChangeListener {
-
-    private static final String KEY_INDEX = "index";
-    private int index;
-    private boolean isLandscape;
-    public static NoteSource noteSource;
+public class MainActivity extends AppCompatActivity implements com.gav1s.hw1.ui.ToolbarSetter {
+    private static String ARG_NOTE = "ARG_NOTE";
+    private NoteData selectedNote;
+    private DrawerLayout navDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        readSettings();
         setContentView(R.layout.activity_main);
-        isLandscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
-        if (savedInstanceState == null) {
-            addFragments();
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new NotesListFragment())
+                    .commit();
         }
-        try {
-            noteSource = new NoteSourceImpl().init();
-        } catch (ParseException e) {
-            e.printStackTrace();
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(ARG_NOTE)) {
+            selectedNote = savedInstanceState.getParcelable(ARG_NOTE);
+
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && selectedNote != null) {
+                showNoteContent();
+            }
         }
-        initView();
+
+        getSupportFragmentManager()
+                .setFragmentResultListener(NotesListFragment.RESULT_KEY, this, (requestKey, result) -> {
+                    selectedNote = result.getParcelable(NotesListFragment.ARG_NOTE);
+
+                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        showNoteContent();
+                    } else {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                                .replace(R.id.fragment_container, NoteContentFragment.newInstance(selectedNote))
+                                .addToBackStack("")
+                                .commit();
+                    }
+                });
+
+        navDrawer = findViewById(R.id.nav_drawer);
+
+        NavigationView navigationView = findViewById(R.id.main_drawer);
+
+        if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            navigationView.setNavigationItemSelectedListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.actionAbout:
+                        menuAction(new AboutAppFragment(), "aboutAppFragment");
+                        return true;
+                    case R.id.actionSettings:
+                        menuAction(new SettingsFragment(), "settingsFragment");
+                        return true;
+                }
+                return false;
+            });
+        }
+
     }
 
-    private void readSettings() {
-        SharedPreferences sharedPref = getSharedPreferences(Settings.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
-        Settings.isDarkTheme = sharedPref.getBoolean(Settings.DARK_THEME, false);
-    }
-    private void addFragments() {
-        NotesListFragment notesListFragment = NotesListFragment.newInstance();
+    private void menuAction(Fragment fragment, String tag) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.mainContainer, notesListFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.fragment_container, fragment, tag)
+                .addToBackStack("")
                 .commit();
-        if (isLandscape) {
-            NoteContentFragment noteContentFragment = NoteContentFragment.newInstance(index);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.contentContainer, noteContentFragment)
-                    .commit();
-        }
+        navDrawer.closeDrawer(GravityCompat.START);
     }
-    private void initView() {
-        Toolbar toolbar = initToolbar();
-        initDrawer(toolbar);
-    }
-    private void initDrawer(Toolbar toolbar) {
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar,
-                R.string.navigationDrawerOpen,
-                R.string.navigationDrawerClose);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (navigateFragment(id)){
-                drawer.closeDrawer(GravityCompat.START);
-                return true;
-            }
-            return false;
-        });
-    }
-    private Toolbar initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        return toolbar;
-    }
-    @SuppressLint("NonConstantResourceId")
+
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (navigateFragment(id)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    @SuppressLint("NonConstantResourceId")
-    private boolean navigateFragment(int id) {
-        switch (id) {
-            case R.id.actionSettings:
-                replaceFragment(new SettingsFragment());
-                return true;
-            case R.id.actionFavorite:
-                Toast.makeText(MainActivity.this, "Favorite menu selected", Toast.LENGTH_SHORT).show();
-                return true;
-        }
-        return false;
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem search = menu.findItem(R.id.actionSearch);
-        SearchView searchText = (SearchView) search.getActionView();
-        searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(MainActivity.this, query, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return true;
-            }
-        });
-        return true;
-    }
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        index = savedInstanceState.getInt(KEY_INDEX);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.mainContainer, NotesListFragment.newInstance())
-                .commit();
-        if (isLandscape) {
-            NoteContentFragment noteContentFragment = NoteContentFragment.newInstance(index);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.contentContainer, noteContentFragment)
-                    .commit();
-        }
-    }
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(KEY_INDEX, index);
-    }
-    @Override
-    public void replaceFragment(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                .beginTransaction();
-        if (isLandscape) {
-            fragmentTransaction.replace(R.id.contentContainer, fragment);
-        } else {
-            fragmentTransaction.replace(R.id.mainContainer, fragment)
-                    .addToBackStack(null);
-        }
-        fragmentTransaction.commit();
-    }
-    @Override
-    public void closeFragmentAndBackTo(int indexPopFragment) {
-        if (isLandscape) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.contentContainer, NoteContentFragment.newInstance(indexPopFragment))
-                    .commit();
-        } else {
-            getSupportFragmentManager().popBackStack();
+        if (selectedNote != null) {
+            outState.putParcelable(ARG_NOTE, selectedNote);
         }
     }
+
+    private void showNoteContent() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.fragment_content_container_land, NoteContentFragment.newInstance(selectedNote))
+                .addToBackStack("")
+                .commit();
+    }
+
+    public void setSelectedNoteToNull() {
+        selectedNote = null;
+    }
+
     @Override
-    public void changeIndex(int index) {
-        this.index = index;
+    public void setToolbar(Toolbar toolbar) {
+        if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this,
+                    navDrawer,
+                    toolbar,
+                    R.string.appbar_scrolling_view_behavior,
+                    R.string.appbar_scrolling_view_behavior
+            );
+            navDrawer.addDrawerListener(toggle);
+            toggle.syncState();
+        }
     }
 }

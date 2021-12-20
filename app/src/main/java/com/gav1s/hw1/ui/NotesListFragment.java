@@ -1,100 +1,130 @@
 package com.gav1s.hw1.ui;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gav1s.hw1.MainActivity;
+import com.gav1s.hw1.ui.dialogalert.AlertDialogFragment;
+import com.gav1s.hw1.ui.list.NotesListPresenter;
+import com.gav1s.hw1.ui.list.NotesListView;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.gav1s.hw1.R;
-import com.gav1s.hw1.data.FragmentChangeListener;
-import com.gav1s.hw1.data.NoteSource;
+import com.gav1s.hw1.data.NoteData;
+import com.gav1s.hw1.data.NoteSourceImpl;
 
+import java.util.List;
 
-public class NotesListFragment extends Fragment {
+public class NotesListFragment extends Fragment implements NotesListView {
+    public static String ARG_NOTE = "ARG_NOTE";
+    public static String RESULT_KEY = "NotesListFragment_RESULT";
 
+    private RecyclerView notesContainer;
+    private NotesListPresenter presenter;
     private NotesListAdapter adapter;
-    public NotesListFragment() {
-    }
-
-    public static NotesListFragment newInstance() {
-        return new NotesListFragment();
-    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        presenter = new NotesListPresenter(this, new NoteSourceImpl());
+        adapter = new NotesListAdapter();
+        adapter.setOnClick(new NotesListAdapter.OnClick() {
+            @Override
+            public void onClick(NoteData note) {
+                Bundle data = new Bundle();
+                data.putParcelable(ARG_NOTE, note);
+
+                getParentFragmentManager()
+                        .setFragmentResult(RESULT_KEY, data);
+            }
+        });
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_notes_list, container, false);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notes_list, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.recycleView);
-        initRecyclerView(recyclerView, MainActivity.noteSource);
-        return view;
-    }
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private void initRecyclerView(RecyclerView recyclerView, NoteSource noteSource) {
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new NotesListAdapter(noteSource, this);
-        recyclerView.setAdapter(adapter);
+        getParentFragmentManager()
+                .setFragmentResultListener(AlertDialogFragment.KEY_RESULT, this, new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        if (result.getInt(AlertDialogFragment.ARG_BUTTON) == R.id.btn_dialog_ok) {
+                            requireActivity().finish();
+                            Toast.makeText(requireContext(), getString(R.string.exit_message), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(requireContext(),  LinearLayoutManager.VERTICAL);
-        itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
-        recyclerView.addItemDecoration(itemDecoration);
+        notesContainer = view.findViewById(R.id.notes_container);
+        notesContainer.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        notesContainer.setAdapter(adapter);
 
-        adapter.setOnItemClickListener((view, position) ->
-                changeFragment(position));
-    }
+        FloatingActionButton fab = view.findViewById(R.id.fab);
 
-    private void changeFragment(int index) {
-        FragmentChangeListener fragmentChangeListener = (FragmentChangeListener) getActivity();
-        assert fragmentChangeListener != null;
-        fragmentChangeListener.changeIndex(index);
-        fragmentChangeListener.replaceFragment(NoteContentFragment.newInstance(index));
-    }
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(requireContext(), getString(R.string.fab_new_note_message), Toast.LENGTH_SHORT).show();
+            }
+        });
 
-    @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = requireActivity().getMenuInflater();
-        inflater.inflate(R.menu.note_actions, menu);
-    }
+        BottomAppBar bar = view.findViewById(R.id.bar);
+        bar.replaceMenu(R.menu.main);
 
-    @SuppressLint("NonConstantResourceId")
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int position = adapter.getMenuPosition();
-
-        switch(item.getItemId()) {
-            case R.id.actionEdit:
-                FragmentChangeListener fragmentChangeListener = (FragmentChangeListener) getActivity();
-                if (fragmentChangeListener != null) {
-                    fragmentChangeListener.replaceFragment(NoteEditFragment.newInstance(position));
-                }
-                adapter.notifyItemChanged(position);
-                return true;
-            case R.id.actionSend:
-                return true;
-            case R.id.actionDelete:
-                MainActivity.noteSource.deleteNoteData(position);
-                adapter.notifyItemRemoved(position);
-                return true;
+        Activity activity = requireActivity();
+        if (activity instanceof ToolbarSetter) {
+            ((ToolbarSetter) activity).setToolbar(bar);
         }
-        return super.onContextItemSelected(item);
+
+        bar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.actionSort:
+                    Snackbar snackbar = Snackbar.make(view, R.string.snack_sync_notes, Snackbar.LENGTH_SHORT);
+                    snackbar.getView().setBackgroundColor(requireContext().getColor(R.color.note_title));
+                    snackbar.setTextColor(requireContext().getColor(R.color.background_dark));
+                    snackbar.show();
+                    return true;
+
+                case R.id.actionSearch:
+                    Toast.makeText(requireContext(), getString(R.string.search_notes_message), Toast.LENGTH_SHORT).show();
+                    return true;
+
+                case R.id.actionExit:
+                    showAlertFragmentDialog(getString(R.string.alert_dialog_exit_message));
+                    return true;
+            }
+            return false;
+        });
+
+        presenter.updateNotesList(requireContext());
+    }
+
+    @Override
+    public void showNotes(List<NoteData> notes) {
+        adapter.setData(notes);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void showAlertFragmentDialog(String message) {
+        AlertDialogFragment.newInstance(message)
+                .show(getParentFragmentManager(), AlertDialogFragment.getTAG());
     }
 }

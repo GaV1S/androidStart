@@ -17,92 +17,84 @@ import com.gav1s.hw1.R;
 import com.gav1s.hw1.data.NoteData;
 import com.gav1s.hw1.data.NoteSource;
 
-public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.MyViewHolder> {
+import java.util.ArrayList;
+import java.util.Collection;
 
-    private final static String TAG = "NoteListAdapter";
+public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.NoteViewHolder> {
 
-    private final NoteSource noteSource;
-    private final Fragment fragment;
-    private OnItemClickListener itemClickListener;
-    private int menuPosition;
+    private ArrayList<NoteData> data = new ArrayList<NoteData>();
 
-    public NotesListAdapter(NoteSource noteSource, Fragment fragment) {
-        this.noteSource = noteSource;
-        this.fragment = fragment;
+    private OnClick onClick;
+
+    public OnClick getOnClick() {
+        return onClick;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @NonNull
-    @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item, parent, false);
-        Log.d(TAG, "onCreateViewHolder");
-        return new MyViewHolder(v);
+    public void setOnClick(OnClick onClick) {
+        this.onClick = onClick;
+    }
+
+    interface OnClick {
+        void onClick(NoteData note);
+    }
+
+
+    public void setData(Collection<NoteData> notes) {
+        data.clear();
+        data.addAll(notes);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.bind(noteSource.getNoteData(position));
-        Log.d(TAG, "onBindViewHolder");
+    public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false);
+        return new NoteViewHolder(itemView);
+    }
 
+    @Override
+    public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
+
+        NoteData note = data.get(position);
+
+        holder.getNoteTitle().setText(note.getNoteTitle());
+        holder.getNoteCreateDate().setText(note.getNoteCreateDate());
     }
 
     @Override
     public int getItemCount() {
-        return noteSource.size();
+        return data.size();
     }
 
-    public void setOnItemClickListener(OnItemClickListener itemClickListener){
-        this.itemClickListener = itemClickListener;
-    }
+    class NoteViewHolder extends RecyclerView.ViewHolder {
 
-    public interface OnItemClickListener {
-        void onItemClick(View view , int position);
-    }
+        private final TextView noteTitle;
 
-    public int getMenuPosition() {
-        return menuPosition;
-    }
+        private final TextView noteCreateDate;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-
-        final private TextView title;
-        final private TextView createTime;
-
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        public MyViewHolder(@NonNull final View itemView) {
+        public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.title);
-            createTime = itemView.findViewById(R.id.createTime);
-            registerContextMenu(itemView);
-            LinearLayout linearLayout = itemView.findViewById(R.id.noteLine);
-            linearLayout.setOnClickListener(v -> {
-                if (itemClickListener != null) {
-                    itemClickListener.onItemClick(v, getAdapterPosition());
+
+            noteTitle = itemView.findViewById(R.id.note_title);
+
+            noteCreateDate = itemView.findViewById(R.id.note_create_date);
+
+            itemView.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NoteData note = data.get(getAdapterPosition());
+
+                    if (getOnClick() != null) {
+                        getOnClick().onClick(note);
+                    }
                 }
             });
-            linearLayout.setOnLongClickListener(v -> {
-                menuPosition = getLayoutPosition();
-                itemView.showContextMenu(10, 10);
-                return true;
-            });
-
         }
 
-        private void registerContextMenu(@NonNull View itemView) {
-            if (fragment != null){
-                itemView.setOnLongClickListener(v -> {
-                    menuPosition = getLayoutPosition();
-                    return false;
-                });
-                fragment.registerForContextMenu(itemView);
-            }
+        public TextView getNoteTitle() {
+            return noteTitle;
         }
 
-        public void bind(NoteData noteData){
-            title.setText(noteData.getTitle());
-            createTime.setText(noteData.getStringCreateTime());
+        public TextView getNoteCreateDate() {
+            return noteCreateDate;
         }
     }
 }

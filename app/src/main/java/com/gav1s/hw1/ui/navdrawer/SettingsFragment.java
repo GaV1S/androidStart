@@ -1,4 +1,4 @@
-package com.gav1s.hw1.ui;
+package com.gav1s.hw1.ui.navdrawer;
 
 import android.os.Bundle;
 
