@@ -17,4 +17,20 @@
     <string name="about">About program</string>
     <string name="preCreateTimeString">Created in</string>
     <string name="menuDelete">Delete</string>
+    <string name="note_content">note_content</string>
+    <string name="note_title">Note</string>
+    <string name="fab_edit_message">Edit note content</string>
+    <string name="note_create_date">01.01.2021</string>
+    <string name="cancel">Cancel</string>
+    <string name="go_to_github">Go to Github</string>
+    <string name="button_cancel_message">Cancel</string>
+    <string name="note_deleted_message">Delete</string>
+    <string name="created">Created</string>
+    <string name="fab_new_note_message">Add new note</string>
+    <string name="exit_message">Exit</string>
+    <string name="snack_sync_notes">Sync notes</string>
+    <string name="search_notes_message">Search notes</string>
+    <string name="alert_dialog_exit_message">Exit app?</string>
+    <string name="exit">Exit</string>
+    <string name="attach_message">Attach file</string>
 </resources>

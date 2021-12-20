@@ -1,14 +1,10 @@
 package com.gav1s.hw1.data;
 
-import com.gav1s.hw1.data.NoteData;
+import android.content.Context;
+
+import java.util.List;
 
 public interface NoteSource {
 
-    NoteData getNoteData(int position);
-
-    int size();
-
-    void updateNoteData(int position, NoteData noteData);
-
-    void deleteNoteData(int position);
+    List<NoteData> getNotes(Context context);
 }

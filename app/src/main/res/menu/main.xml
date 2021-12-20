@@ -32,4 +32,10 @@
         android:title="@string/menuSearch"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/actionExit"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_exit_to_app_24"
+        android:title="@string/exit"
+        app:showAsAction="ifRoom" />
 </menu>
