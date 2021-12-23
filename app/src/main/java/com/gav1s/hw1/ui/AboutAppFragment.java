@@ -17,6 +17,8 @@ import com.gav1s.hw1.R;
 
 public class AboutAppFragment extends Fragment {
 
+    public static final String TAG = "About app";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
