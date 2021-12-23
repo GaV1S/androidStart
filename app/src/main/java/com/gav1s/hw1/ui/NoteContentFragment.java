@@ -1,48 +1,80 @@
 package com.gav1s.hw1.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.app.Activity;
 import android.view.inputmethod.InputMethodManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.ImageView;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import com.gav1s.hw1.data.NoteData;
+import com.gav1s.hw1.data.NoteSource;
+import com.gav1s.hw1.ui.contextmenu.AddNotePresenter;
+import com.gav1s.hw1.ui.contextmenu.AddNoteView;
 import com.gav1s.hw1.ui.dialogalert.AlertDialogFragment;
 import com.gav1s.hw1.ui.dialogalert.BottomDialogFragment;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.gav1s.hw1.MainActivity;
+import com.gav1s.hw1.data.NoteSourceImpl;
+import com.gav1s.hw1.ui.list.NotePresenter;
+import com.gav1s.hw1.ui.list.UpdateNotePresenter;
+import com.gav1s.hw1.ui.ToolbarSetter;
 import com.gav1s.hw1.R;
 
-public class NoteContentFragment extends Fragment {
-    private static final String ARG_NOTE = "ARG_NOTE";
+public class NoteContentFragment extends Fragment implements AddNoteView {
+    public static String ARG_NOTE = "ARG_NOTE";
+    public static String KEY_RESULT = "NoteContentFragment";
 
-    public static NoteContentFragment newInstance(NoteData noteData) {
+    private FloatingActionButton fab;
+    private ProgressBar savingProgressBar;
+    private NotePresenter presenter;
+    private EditText noteTitle;
+    private EditText noteContent;
+    BottomAppBar bar;
+
+    NoteData noteData;
+
+    public static NoteContentFragment addInstance() {
+        return new NoteContentFragment();
+    }
+
+    public static NoteContentFragment updateInstance(NoteData noteData) {
         NoteContentFragment fragment = new NoteContentFragment();
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARG_NOTE, noteData);
         fragment.setArguments(arguments);
         return fragment;
     }
+
     public NoteContentFragment() {
         super(R.layout.fragment_note_content);
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        NoteData noteData = requireArguments().getParcelable(ARG_NOTE);
 
-        BottomAppBar bar = view.findViewById(R.id.bar);
+        noteTitle = view.findViewById(R.id.noteTitle);
+        noteContent = view.findViewById(R.id.noteContent);
+        fab = view.findViewById(R.id.fab);
+        if (getArguments() == null) {
+            presenter = new AddNotePresenter(this, NoteSourceImpl.INSTANCE);
+        } else {
+            noteData = getArguments().getParcelable(ARG_NOTE);
+            presenter = new UpdateNotePresenter(this, NoteSourceImpl.INSTANCE, noteData);
+        }
+
+        bar = view.findViewById(R.id.bar);
+
         Activity activity = requireActivity();
         if (activity instanceof ToolbarSetter) {
             ((ToolbarSetter) activity).setToolbar(bar);
@@ -51,7 +83,7 @@ public class NoteContentFragment extends Fragment {
         bar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.actionSend:
-                    Toast.makeText(requireContext(), getString(R.string.menuSend), Toast.LENGTH_SHORT).show();
+                    shareNote(noteContent.getText().toString());
                     return true;
 
                 case R.id.actionEdit:
@@ -64,20 +96,14 @@ public class NoteContentFragment extends Fragment {
             }
             return false;
         });
-        TextView noteTitle = view.findViewById(R.id.noteTitle);
-        TextView noteContent = view.findViewById(R.id.noteContent);
-        ImageView close = view.findViewById(R.id.close_icon);
-        FloatingActionButton fab = view.findViewById(R.id.fab);
-        noteTitle.setText(noteData.getNoteTitle());
-        noteContent.setText(noteData.getNoteContent());
 
-        fab.setOnClickListener(v -> Toast.makeText(requireContext(), getString(R.string.fab_edit_message), Toast.LENGTH_SHORT).show());
-        close.setOnClickListener(v -> {
+        savingProgressBar = view.findViewById(R.id.saving_progress);
+
+        fab.setOnClickListener(v -> {
             hideKeyboardFrom(requireContext(), noteTitle);
             hideKeyboardFrom(requireContext(), noteContent);
 
-            ((MainActivity) requireActivity()).setSelectedNoteToNull();
-            requireActivity().onBackPressed();
+            presenter.onActionPressed(noteTitle.getText().toString(), noteContent.getText().toString());
         });
     }
 
@@ -100,15 +126,31 @@ public class NoteContentFragment extends Fragment {
     }
 
     private void setDialogListener(String keyResult, String argument, String message) {
-        getParentFragmentManager()
-                .setFragmentResultListener(keyResult, this, new FragmentResultListener() {
-                    @Override
-                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                        if (result.getInt(argument) == R.id.btn_dialog_ok) {
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        if (keyResult.equals("AlertDialogFragment")) {
+            getParentFragmentManager()
+                    .setFragmentResultListener(keyResult, this, new FragmentResultListener() {
+                        @Override
+                        public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                            if (result.getInt(argument) == R.id.btn_dialog_ok) {
+                                requireActivity().onBackPressed();
+                                Bundle bundle = new Bundle();
+                                bundle.putParcelable(ARG_NOTE, noteData);
+                                getParentFragmentManager()
+                                        .setFragmentResult(KEY_RESULT, bundle);
+                            }
                         }
-                    }
-                });
+                    });
+        } else {
+            getParentFragmentManager()
+                    .setFragmentResultListener(keyResult, this, new FragmentResultListener() {
+                        @Override
+                        public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                            if (result.getInt(argument) == R.id.btn_dialog_ok) {
+                                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
     }
 
     private void hideKeyboardFrom(Context context, View view) {
@@ -116,4 +158,43 @@ public class NoteContentFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    private void shareNote(String message) {
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        intent.setType(getString(R.string.text_plain_type));
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+        startActivity(Intent.createChooser(intent, ""));
+    }
+
+    @Override
+    public void showProgress() {
+        fab.setVisibility(View.GONE);
+        savingProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgress() {
+        fab.setVisibility(View.VISIBLE);
+        savingProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setFabIcon(int icon) {
+        fab.setImageDrawable(ContextCompat.getDrawable(getContext(), icon));
+    }
+
+    @Override
+    public void setTitle(String title) {
+        noteTitle.setText(title);
+    }
+
+    @Override
+    public void setMessage(String message) {
+        noteContent.setText(message);
+    }
+
+    @Override
+    public void actionCompleted(String key, Bundle bundle) {
+        getParentFragmentManager()
+                .setFragmentResult(key, bundle);
+    }
 }

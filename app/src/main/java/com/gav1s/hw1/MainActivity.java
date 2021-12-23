@@ -12,13 +12,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.gav1s.hw1.ui.NoteContentFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import com.gav1s.hw1.data.NoteData;
 import com.gav1s.hw1.ui.AboutAppFragment;
-import com.gav1s.hw1.ui.NoteContentFragment;
 import com.gav1s.hw1.ui.navdrawer.SettingsFragment;
-import com.gav1s.hw1.ui.NotesListFragment;
+import com.gav1s.hw1.ui.list.NotesListFragment;
 
 public class MainActivity extends AppCompatActivity implements com.gav1s.hw1.ui.ToolbarSetter {
     private static String ARG_NOTE = "ARG_NOTE";
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements com.gav1s.hw1.ui.
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                                .replace(R.id.fragment_container, NoteContentFragment.newInstance(selectedNote))
+                                .add(R.id.fragment_container, NoteContentFragment.updateInstance(selectedNote))
                                 .addToBackStack("")
                                 .commit();
                     }
@@ -69,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements com.gav1s.hw1.ui.
             navigationView.setNavigationItemSelectedListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.actionAbout:
-                        menuAction(new AboutAppFragment(), "aboutAppFragment");
+                        menuAction(new AboutAppFragment(), AboutAppFragment.TAG);
                         return true;
                     case R.id.actionSettings:
-                        menuAction(new SettingsFragment(), "settingsFragment");
+                        menuAction(new SettingsFragment(), SettingsFragment.TAG);
                         return true;
                 }
                 return false;
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements com.gav1s.hw1.ui.
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.fragment_container, fragment, tag)
+                .add(R.id.fragment_container, fragment, tag)
                 .addToBackStack("")
                 .commit();
         navDrawer.closeDrawer(GravityCompat.START);
@@ -104,13 +104,9 @@ public class MainActivity extends AppCompatActivity implements com.gav1s.hw1.ui.
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.fragment_content_container_land, NoteContentFragment.newInstance(selectedNote))
+                .replace(R.id.fragment_content_container_land, NoteContentFragment.updateInstance(selectedNote))
                 .addToBackStack("")
                 .commit();
-    }
-
-    public void setSelectedNoteToNull() {
-        selectedNote = null;
     }
 
     @Override

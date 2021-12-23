@@ -33,4 +33,12 @@
     <string name="alert_dialog_exit_message">Exit app?</string>
     <string name="exit">Exit</string>
     <string name="attach_message">Attach file</string>
+    <string name="new_note_title">New note title</string>
+    <string name="new_note_content">New note content</string>
+    <string name="notes_are_absent_today">Notes are absent today</string>
+    <string name="some_settings">Some settings</string>
+    <string name="change_grid_notes_list">Change grid notes list</string>
+    <string name="action_delete">delete</string>
+    <string name="delete_error_message">Impossible to delete unsaved note</string>
+    <string name="text_plain_type">text/plain</string>
 </resources>

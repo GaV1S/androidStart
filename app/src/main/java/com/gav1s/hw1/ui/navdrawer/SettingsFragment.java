@@ -12,23 +12,7 @@ import com.gav1s.hw1.R;
 
 public class SettingsFragment extends Fragment {
 
-    public SettingsFragment() {
-
-    }
-
-    public static SettingsFragment newInstance() {
-        SettingsFragment fragment = new SettingsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
-    }
+    public static final String TAG = "SettingsFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

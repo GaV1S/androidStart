@@ -38,5 +38,6 @@
     <dimen name="padding_20dp">20</dimen>
     <dimen name="note_icon_size">40</dimen>
     <dimen name="note_title_size">20</dimen>
-    <dimen name="create_date_size">16</dimen>
+    <dimen name="create_date_size">12</dimen>
+    <dimen name="recycler_view_padding_bottom">80</dimen>
 </resources>
